@@ -177,8 +177,17 @@ export default function App() {
       setSettingsOpen(true);
       return;
     }
-    // If currently recording, flush the in-flight chunk so the suggestions see the latest speech.
-    if (recording) flush();
+    // Spec: "a refresh button which manually updates transcript THEN suggestions".
+    // If recording, flush the in-flight MediaRecorder chunk and wait up to 6s for the
+    // fresh transcript to land before we request new suggestions.
+    if (recording) {
+      const before = chunksRef.current.length;
+      flush();
+      const start = Date.now();
+      while (chunksRef.current.length === before && Date.now() - start < 6000) {
+        await new Promise((r) => setTimeout(r, 150));
+      }
+    }
     await runSuggestions();
   };
 
