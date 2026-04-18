@@ -82,6 +82,8 @@ def _tail(text: str, n: int) -> str:
 
 
 def _groq_error(status: int, body: str) -> HTTPException:
+    """Map a Groq HTTP error into a clean FastAPI error, preserving the upstream
+    status code for 4xx (so the user sees actionable messages like 403 model-blocked)."""
     try:
         parsed = json.loads(body)
         msg = parsed.get("error", {}).get("message") or body
@@ -91,6 +93,10 @@ def _groq_error(status: int, body: str) -> HTTPException:
         return HTTPException(status_code=401, detail=f"Invalid Groq API key: {msg}")
     if status == 429:
         return HTTPException(status_code=429, detail=f"Groq rate limit: {msg}")
+    if 400 <= status < 500:
+        # Passthrough for 403 (model blocked / permission), 404 (unknown model),
+        # 400 (bad request), 413 (too large), etc. so the UI shows Groq's own wording.
+        return HTTPException(status_code=status, detail=f"Groq {status}: {msg}")
     return HTTPException(status_code=502, detail=f"Groq error {status}: {msg}")
 
 
