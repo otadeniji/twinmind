@@ -1,0 +1,27 @@
+/* Font families loaded via public/index.html <link>. */
+
+.heading {
+  font-family: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01";
+}
+
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle custom scrollbars inside columns. */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(23, 23, 23, 0.15);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(23, 23, 23, 0.3);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
